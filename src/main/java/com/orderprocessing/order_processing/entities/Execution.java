@@ -1,4 +1,4 @@
-package entities;
+package com.orderprocessing.order_processing.entities;
 
 public class Execution {
     private String timestamp;

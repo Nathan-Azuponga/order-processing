@@ -1,6 +1,5 @@
-package responses;
+package com.orderprocessing.order_processing.responses;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class ErrorResponse {

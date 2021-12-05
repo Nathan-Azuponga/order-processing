@@ -1,9 +1,9 @@
-package dto;
+package com.orderprocessing.order_processing.dto;
 
-import entities.Order;
-import entities.Portfolio;
-import enums.Side;
-import enums.Status;
+import com.orderprocessing.order_processing.entities.Order;
+import com.orderprocessing.order_processing.entities.Portfolio;
+import com.orderprocessing.order_processing.enums.Side;
+import com.orderprocessing.order_processing.enums.Status;
 import lombok.*;
 
 import javax.persistence.EnumType;

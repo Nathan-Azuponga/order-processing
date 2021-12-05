@@ -1,9 +1,9 @@
-package Services;
+package com.orderprocessing.order_processing.Services;
 
 
-import dto.OrderDto;
+import com.orderprocessing.order_processing.dto.OrderDto;
 import org.springframework.stereotype.Component;
-import requests.OrderRequest;
+import com.orderprocessing.order_processing.requests.OrderRequest;
 
 import java.util.List;
 

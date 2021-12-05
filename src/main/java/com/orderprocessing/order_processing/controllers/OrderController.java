@@ -1,14 +1,14 @@
-package controllers;
+package com.orderprocessing.order_processing.controllers;
 
-import Services.IOrderService;
-import dto.OrderDto;
-import entities.ExchangeOrder;
+import com.orderprocessing.order_processing.Services.IOrderService;
+import com.orderprocessing.order_processing.dto.OrderDto;
+import com.orderprocessing.order_processing.entities.ExchangeOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
-import requests.OrderRequest;
+import com.orderprocessing.order_processing.requests.OrderRequest;
 
 import java.util.List;
 
@@ -47,7 +47,7 @@ public class OrderController {
 
     @PutMapping(path = "/orders/update/{id}")
     public ResponseEntity<OrderDto> updateOrder(@PathVariable String id, @RequestBody OrderDto dto){
-        return null;
+        return new ResponseEntity<>(orderService.updateOrder(id,dto),HttpStatus.OK);
     }
 
     @DeleteMapping("/orders/delete/{id}")

@@ -1,8 +1,8 @@
-package entities;
+package com.orderprocessing.order_processing.entities;
 
-import dto.OrderDto;
-import enums.Side;
-import enums.Status;
+import com.orderprocessing.order_processing.dto.OrderDto;
+import com.orderprocessing.order_processing.enums.Side;
+import com.orderprocessing.order_processing.enums.Status;
 
 import javax.persistence.*;
 

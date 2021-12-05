@@ -1,7 +1,7 @@
-package requests;
+package com.orderprocessing.order_processing.requests;
 
 
-import enums.Side;
+import com.orderprocessing.order_processing.enums.Side;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 

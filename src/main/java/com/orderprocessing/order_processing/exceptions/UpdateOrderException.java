@@ -1,4 +1,4 @@
-package exceptions;
+package com.orderprocessing.order_processing.exceptions;
 
 public class UpdateOrderException extends RuntimeException {
 
