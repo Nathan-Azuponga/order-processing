@@ -36,7 +36,7 @@ public class OrderService implements IOrderService {
 
     @Override
     public OrderDto createOrder(OrderRequest orderRequest, String orderId) {
-        Order order = new Order();git
+        Order order = new Order();
 
         order.setSide(orderRequest.getSide());
         order.setQuantity(orderRequest.getQuantity());
