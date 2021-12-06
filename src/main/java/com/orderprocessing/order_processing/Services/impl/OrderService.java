@@ -4,6 +4,7 @@ package com.orderprocessing.order_processing.Services.impl;
 import com.orderprocessing.order_processing.Services.IOrderService;
 import com.orderprocessing.order_processing.dto.OrderDto;
 import com.orderprocessing.order_processing.entities.Order;
+import com.orderprocessing.order_processing.enums.Side;
 import com.orderprocessing.order_processing.enums.Status;
 import com.orderprocessing.order_processing.exceptions.OrderNotFoundException;
 import com.orderprocessing.order_processing.exceptions.UpdateOrderException;
@@ -16,7 +17,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
-
 
 
 import java.util.List;
@@ -38,6 +38,19 @@ public class OrderService implements IOrderService {
     public OrderDto createOrder(OrderRequest orderRequest, String orderId) {
         Order order = new Order();
 
+        Double clientBalance = 340.50;
+        int clientQuantity = 300;
+        String clientProduct = "AAPL";
+
+        if (!(orderRequest.getSide() == Side.BUY) && ((orderRequest.getQuantity() * orderRequest.getPrice()) <= clientBalance)) {
+            System.out.println("Invalid Buy order!!! Respond to the order");
+
+        } else if (!(orderRequest.getSide() == Side.SELL && (orderRequest.getQuantity() <= clientQuantity && orderRequest.getProduct() == clientProduct))) {
+
+            System.out.println("Invalid Sell order!!! Respond to the order");
+
+        }
+
         order.setSide(orderRequest.getSide());
         order.setQuantity(orderRequest.getQuantity());
         order.setPrice(orderRequest.getPrice());
@@ -45,6 +58,7 @@ public class OrderService implements IOrderService {
         order.setStatus(Status.PENDING);
         order.setId(orderId);
 
+        // Send to reporting/logging system
         Order savedOrder = orderRepository.save(order);
         return OrderDto.fromModel(savedOrder);
     }
@@ -56,8 +70,8 @@ public class OrderService implements IOrderService {
 
     @Override
     public OrderDto updateOrder(String id, OrderDto dto) {
-        Order order = orderRepository.findById(id).orElseThrow(()->new OrderNotFoundException("The order with " + id + " is not found" ));
-        if(order.getStatus() != Status.PENDING){
+        Order order = orderRepository.findById(id).orElseThrow(() -> new OrderNotFoundException("The order with " + id + " is not found"));
+        if (order.getStatus() != Status.PENDING) {
             throw new UpdateOrderException("Order can not be updated");
         }
 
@@ -76,12 +90,12 @@ public class OrderService implements IOrderService {
         String EXCHANGE_URL = "https://exchange.matraining.com";
         String API_KEY = "a7849689-214b-4ec6-860d-b32603e76859";
         Boolean oid = Optional.ofNullable(restTemplate
-                        .exchange(EXCHANGE_URL + "/" + API_KEY + " /order/" +order
-                        .getId(), HttpMethod.PUT, request, Boolean.class)
+                        .exchange(EXCHANGE_URL + "/" + API_KEY + " /order/" + order
+                                .getId(), HttpMethod.PUT, request, Boolean.class)
                         .getBody())
                 .orElse(false);
 
-        if(oid){
+        if (oid) {
             order = orderRepository.save(order);
         }
         return OrderDto.fromModel(order);
