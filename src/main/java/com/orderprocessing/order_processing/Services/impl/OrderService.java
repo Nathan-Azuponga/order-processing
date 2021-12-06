@@ -36,7 +36,7 @@ public class OrderService implements IOrderService {
 
     @Override
     public OrderDto createOrder(OrderRequest orderRequest, String orderId) {
-        Order order = new Order();
+        Order order = new Order();git
 
         order.setSide(orderRequest.getSide());
         order.setQuantity(orderRequest.getQuantity());
@@ -56,7 +56,7 @@ public class OrderService implements IOrderService {
 
     @Override
     public OrderDto updateOrder(String id, OrderDto dto) {
-        Order order = orderRepository.findById(id).orElseThrow(()->new OrderNotFoundException("Order with " + id + "not found" ));
+        Order order = orderRepository.findById(id).orElseThrow(()->new OrderNotFoundException("The order with " + id + " is not found" ));
         if(order.getStatus() != Status.PENDING){
             throw new UpdateOrderException("Order can not be updated");
         }
