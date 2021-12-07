@@ -69,41 +69,45 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public OrderDto updateOrder(String id, OrderDto dto) {
+    public OrderDto updateOrder(OrderDto dto) {
+
+        // Receive from Update Instructions and pass it on to OrderValidationService
+        String id = "";
+
         Order order = orderRepository.findById(id).orElseThrow(() -> new OrderNotFoundException("The order with " + id + " is not found"));
-        if (order.getStatus() != Status.PENDING) {
-            throw new UpdateOrderException("Order can not be updated");
-        }
 
-        order.setQuantity(dto.getQuantity());
-        order.setPrice(dto.getPrice());
-
-        OrderRequest orderRequest = new OrderRequest();
-
-        orderRequest.setSide(order.getSide());
-        orderRequest.setPrice(order.getPrice());
-        orderRequest.setProduct(order.getProduct());
-        orderRequest.setQuantity(order.getQuantity());
-
-        HttpEntity<OrderRequest> request = new HttpEntity<>(orderRequest); //wrapping our body into HttpEntity
-
-        String EXCHANGE_URL = "https://exchange.matraining.com";
-        String API_KEY = "a7849689-214b-4ec6-860d-b32603e76859";
-        Boolean oid = Optional.ofNullable(restTemplate
-                        .exchange(EXCHANGE_URL + "/" + API_KEY + " /order/" + order
-                                .getId(), HttpMethod.PUT, request, Boolean.class)
-                        .getBody())
-                .orElse(false);
-
-        if (oid) {
-            order = orderRepository.save(order);
-        }
+//        order.setQuantity(dto.getQuantity());
+//        order.setPrice(dto.getPrice());
+//
+//        OrderRequest orderRequest = new OrderRequest();
+//
+//        orderRequest.setSide(order.getSide());
+//        orderRequest.setPrice(order.getPrice());
+//        orderRequest.setProduct(order.getProduct());
+//        orderRequest.setQuantity(order.getQuantity());
+//
+//        HttpEntity<OrderRequest> request = new HttpEntity<>(orderRequest); //wrapping our body into HttpEntity
+//
+//        String EXCHANGE_URL = "https://exchange.matraining.com";
+//        String API_KEY = "a7849689-214b-4ec6-860d-b32603e76859";
+//        Boolean oid = Optional.ofNullable(restTemplate
+//                        .exchange(EXCHANGE_URL + "/" + API_KEY + " /order/" + order
+//                                .getId(), HttpMethod.PUT, request, Boolean.class)
+//                        .getBody())
+//                .orElse(false);
+//
+//        if (oid) {
+//            order = orderRepository.save(order);
+//        }
         return OrderDto.fromModel(order);
     }
 
 
     @Override
     public boolean deleteOrder(String id) {
+
+        // Receive ID from UI to be deleted
+
         Optional<Order> order = orderRepository.findById(id);
         if (order.isEmpty()) {
             return false;

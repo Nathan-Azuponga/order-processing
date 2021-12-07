@@ -26,6 +26,10 @@ public class OrderDto {
     @Enumerated(EnumType.STRING)
     private Status status;
 
+    public Status getStatus() {
+        return status;
+    }
+
     private Portfolio portfolio;
 
     public String getId() {

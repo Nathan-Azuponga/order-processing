@@ -19,7 +19,7 @@ public class OrderRequest {
     private int quantity;
 
 
-    private Double price;
+    private double price;
 
 
     @Enumerated(EnumType.STRING)
@@ -42,11 +42,11 @@ public class OrderRequest {
         this.quantity = quantity;
     }
 
-    public Double getPrice() {
+    public double getPrice() {
         return price;
     }
 
-    public void setPrice(Double price) {
+    public void setPrice(double price) {
         this.price = price;
     }
 
@@ -56,5 +56,15 @@ public class OrderRequest {
 
     public void setSide(Side side) {
         this.side = side;
+    }
+
+    @Override
+    public String toString() {
+        return "OrderRequest{" +
+                "product='" + product + '\'' +
+                ", quantity=" + quantity +
+                ", price=" + price +
+                ", side=" + side +
+                '}';
     }
 }

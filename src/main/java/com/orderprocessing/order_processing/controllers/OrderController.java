@@ -4,6 +4,7 @@ import com.orderprocessing.order_processing.Services.IOrderService;
 import com.orderprocessing.order_processing.dto.OrderDto;
 import com.orderprocessing.order_processing.entities.ExchangeOrder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,6 +12,7 @@ import org.springframework.web.client.RestTemplate;
 import com.orderprocessing.order_processing.requests.OrderRequest;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/order")
@@ -31,22 +33,24 @@ public class OrderController {
         return orderService.getOrders();
     }
 
-    @PostMapping( "/create")
+    @PostMapping( "/create2")
     public ResponseEntity<OrderDto> createOrder(@RequestBody OrderRequest orderRequest) {
-        ResponseEntity<Boolean> isValidOrder = restTemplate.postForEntity("http://localhost:8080/order/validate", orderRequest, Boolean.class);
+        HttpEntity<OrderRequest> request = new HttpEntity<>(orderRequest);
+        System.out.println(orderRequest);
+        System.out.println(request);
 
-        String orderId = ""; // oid.getBody().replaceAll("\"", "");
-        OrderDto orderDto = orderService.createOrder(orderRequest, orderId);
-        return new ResponseEntity<>(orderDto, HttpStatus.CREATED);
+        ResponseEntity<Boolean> isValidOrder = restTemplate.postForEntity("http://localhost:8080/order/validate/create ", request, Boolean.class);
+        Boolean status = Optional.ofNullable(isValidOrder.getBody()).orElse(false);
+
+        if(isValidOrder.getStatusCode()==HttpStatus.OK && status){
+            ResponseEntity<OrderDto> dto = restTemplate.postForEntity("http://localhost:8080/created",orderRequest,OrderDto.class);
+            OrderDto orderDto = Optional.ofNullable(dto.getBody()).orElse(null);
+            if(dto.getStatusCode()==HttpStatus.OK){
+                return new ResponseEntity<>(orderDto,HttpStatus.CREATED);
+            }
+        } return new ResponseEntity<>(null,HttpStatus.BAD_REQUEST);
     }
 
-    @PostMapping( "/create2") //old one
-    public ResponseEntity<OrderDto> createOrder2(@RequestBody OrderRequest orderRequest) {
-        ResponseEntity<String> oid = restTemplate.postForEntity(EXCHANGE_URL + "/" + API_KEY + " /order", orderRequest, String.class);
-        String orderId = oid.getBody().replaceAll("\"", "");
-        OrderDto orderDto = orderService.createOrder(orderRequest, orderId);
-        return new ResponseEntity<>(orderDto, HttpStatus.CREATED);
-    }
 
     @GetMapping("/getOrder/{id}")
     public ExchangeOrder getOrders(@PathVariable String id){
@@ -56,7 +60,9 @@ public class OrderController {
 
     @PutMapping(path = "/update/{id}")
     public ResponseEntity<OrderDto> updateOrder(@PathVariable String id, @RequestBody OrderDto dto){
-        return new ResponseEntity<>(orderService.updateOrder(id,dto),HttpStatus.OK);
+        ResponseEntity<Boolean> isValidOrder = restTemplate.postForEntity("http://localhost:8080/order/update1", dto, Boolean.class);
+
+        return new ResponseEntity<>(orderService.updateOrder(dto),HttpStatus.OK);
     }
 
     @DeleteMapping("/delete/{id}")

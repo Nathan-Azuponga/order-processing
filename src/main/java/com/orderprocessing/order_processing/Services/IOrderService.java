@@ -12,7 +12,7 @@ public interface IOrderService {
 
     OrderDto createOrder(OrderRequest orderRequest, String orderId);
 
-    OrderDto updateOrder(String id, OrderDto dto);
+    OrderDto updateOrder(OrderDto dto);
 
     OrderDto getOrder(String id);
 
