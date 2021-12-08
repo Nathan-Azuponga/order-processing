@@ -7,13 +7,10 @@ import com.orderprocessing.order_processing.entities.Order;
 import com.orderprocessing.order_processing.enums.Side;
 import com.orderprocessing.order_processing.enums.Status;
 import com.orderprocessing.order_processing.exceptions.OrderNotFoundException;
-import com.orderprocessing.order_processing.exceptions.UpdateOrderException;
 import com.orderprocessing.order_processing.repositories.OrderRepository;
 import com.orderprocessing.order_processing.requests.OrderRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
@@ -37,28 +34,28 @@ public class OrderService implements IOrderService {
     @Override
     public OrderDto createOrder(OrderRequest orderRequest, String orderId) {
         Order order = new Order();
-
-        Double clientBalance = 340.50;
-        int clientQuantity = 300;
-        String clientProduct = "AAPL";
-
-        if (!(orderRequest.getSide() == Side.BUY) && ((orderRequest.getQuantity() * orderRequest.getPrice()) <= clientBalance)) {
-            System.out.println("Invalid Buy order!!! Respond to the order");
-
-        } else if (!(orderRequest.getSide() == Side.SELL && (orderRequest.getQuantity() <= clientQuantity && orderRequest.getProduct() == clientProduct))) {
-
-            System.out.println("Invalid Sell order!!! Respond to the order");
-
-        }
-
-        order.setSide(orderRequest.getSide());
-        order.setQuantity(orderRequest.getQuantity());
-        order.setPrice(orderRequest.getPrice());
-        order.setProduct(orderRequest.getProduct());
-        order.setStatus(Status.PENDING);
-        order.setId(orderId);
-
-        // Send to reporting/logging system
+//
+//        double clientBalance = 340.50;
+//        int clientQuantity = 300;
+//        String clientProduct = "AAPL";
+//
+//        if (!(orderRequest.getSide() == Side.BUY) && ((orderRequest.getQuantity() * orderRequest.getPrice()) <= clientBalance)) {
+//            System.out.println("Invalid Buy order!!! Respond to the order");
+//
+//        } else if (!(orderRequest.getSide() == Side.SELL && (orderRequest.getQuantity() <= clientQuantity && orderRequest.getProduct() == clientProduct))) {
+//
+//            System.out.println("Invalid Sell order!!! Respond to the order");
+//
+//        }
+//
+//        order.setSide(orderRequest.getSide());
+//        order.setQuantity(orderRequest.getQuantity());
+//        order.setPrice(orderRequest.getPrice());
+//        order.setProduct(orderRequest.getProduct());
+//        order.setStatus(Status.PENDING);
+//        order.setId(orderId);
+//
+//        // Send to reporting/logging system
         Order savedOrder = orderRepository.save(order);
         return OrderDto.fromModel(savedOrder);
     }

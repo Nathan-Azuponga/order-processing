@@ -6,15 +6,13 @@ import com.orderprocessing.order_processing.enums.Status;
 
 import javax.persistence.*;
 
-@Entity
-@Table(name = "Orders")
 public class Order {
     @Id
     private String id;
 
     private String product;
     private int quantity;
-    private Double price;
+    private double price;
 
     @Enumerated(EnumType.STRING)
     private Side side;
@@ -49,11 +47,11 @@ public class Order {
         this.quantity = quantity;
     }
 
-    public Double getPrice() {
+    public double getPrice() {
         return price;
     }
 
-    public void setPrice(Double price) {
+    public void setPrice(double price) {
         this.price = price;
     }
 

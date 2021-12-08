@@ -19,7 +19,7 @@ public class OrderDto {
 
     private int quantity;
 
-    private Double price;
+    private double price;
 
     private Side side;
 
@@ -56,11 +56,11 @@ public class OrderDto {
         this.quantity = quantity;
     }
 
-    public Double getPrice() {
+    public double getPrice() {
         return price;
     }
 
-    public void setPrice(Double price) {
+    public void setPrice(double price) {
         this.price = price;
     }
 

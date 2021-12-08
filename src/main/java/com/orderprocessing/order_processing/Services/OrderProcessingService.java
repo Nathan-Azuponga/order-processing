@@ -8,7 +8,6 @@ import com.orderprocessing.order_processing.requests.OrderRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -31,7 +30,7 @@ public class OrderProcessingService {
 
 
     @PostMapping( "/created") //
-    public OrderDto createOrder2(@RequestBody OrderRequest orderRequest) {
+    public void createOrder2(@RequestBody OrderRequest orderRequest) {
         ResponseEntity<String> oid = restTemplate.postForEntity(EXCHANGE_URL + "/" + API_KEY + " /order", orderRequest, String.class);
         String  orderId  = oid.getBody().replaceAll("\"", "");
 
@@ -44,16 +43,17 @@ public class OrderProcessingService {
         order.setStatus(Status.PENDING);
         order.setId(orderId);
 
-        Order savedOrder = orderRepository.save(order);
-        return OrderDto.fromModel(savedOrder);
-
-        // Send to reporting/logging system
-
-
+        // Sending to reporting/logging system
+        restTemplate.postForEntity("https://smartstakereportingservice.herokuapp.com/logorder",
+                order,
+                String.class);
     }
 
-    @PutMapping("/update")
-    public OrderDto update(OrderDto dto){
+
+    //Work on how to get data to it
+    @PostMapping("/updated")
+    public void update(OrderDto dto, String id){
+
         Order order = new Order();
 
         order.setQuantity(dto.getQuantity());
@@ -66,21 +66,23 @@ public class OrderProcessingService {
         orderRequest.setProduct(order.getProduct());
         orderRequest.setQuantity(order.getQuantity());
 
+        System.out.println(orderRequest.getPrice());
+
         HttpEntity<OrderRequest> request = new HttpEntity<>(orderRequest); //wrapping our body into HttpEntity
 
-        Boolean oid = Optional.ofNullable(restTemplate
+        ResponseEntity<Boolean> oid = restTemplate
                         .exchange(EXCHANGE_URL + "/" + API_KEY + " /order/" + order
-                                .getId(), HttpMethod.PUT, request, Boolean.class)
-                        .getBody())
-                .orElse(false);
+                                .getId(), HttpMethod.PUT, request, Boolean.class);
 
-        if (oid) {
-            System.out.println("Send it to the logging/Reporting service");
 
-            //order = orderRepository.save(order);
+        if (Boolean.TRUE.equals(oid.getBody())) {
+            //System.out.println("Send it to the logging/Reporting service");
+            restTemplate.postForEntity("https://smartstakereportingservice.herokuapp.com/logorder",orderRequest,String.class);
         }
-        return OrderDto.fromModel(order);
+
     }
+
+
 
 
 }
