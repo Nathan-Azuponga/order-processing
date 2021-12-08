@@ -33,13 +33,6 @@ public class OrderValidationController {
 
     @PostMapping("/validate/update")
     public ResponseEntity<Boolean> validateUpdateOrder(OrderDto dto){
-      return new ResponseEntity<Boolean>(dto.getStatus() != Status.PENDING, HttpStatus.OK);
+      return new ResponseEntity<Boolean>(dto.getStatus().equals(Status.PENDING), HttpStatus.OK);
     }
-
-//    @DeleteMapping("/cancel/{id}")
-//    public void cancelOrder(@PathVariable("id") String Id){
-//        //Set the status on DB as cancelled and send it back to the exchange
-//    }
-
-
 }
