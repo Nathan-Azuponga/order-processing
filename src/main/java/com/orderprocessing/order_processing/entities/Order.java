@@ -6,6 +6,8 @@ import com.orderprocessing.order_processing.enums.Status;
 
 import javax.persistence.*;
 
+@Entity
+@Table(name = "Orders")
 public class Order {
     @Id
     private String id;

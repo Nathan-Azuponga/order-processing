@@ -61,6 +61,7 @@ public class OrderController {
                 dto,
                 Boolean.class);
         if(Boolean.TRUE.equals(isUpdateOrder.getBody())){
+            dto.setId(id);
             restTemplate.postForEntity("http://localhost:8080/updated",
                     dto,
                     String.class);
