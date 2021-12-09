@@ -68,7 +68,7 @@ public class OrderController {
         return new ResponseEntity<>(null,HttpStatus.BAD_REQUEST);
     }
 
-    @DeleteMapping("/cancel/{id}")
+    @PutMapping("/cancel/{id}")
     public String deletedOrder(@PathVariable("id") String id){
 
         String EXCHANGE_URL = "https://exchange.matraining.com";
