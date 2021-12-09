@@ -69,7 +69,7 @@ public class OrderController {
     }
 
     @PutMapping("/cancel/{id}")
-    public String deletedOrder(@PathVariable("id") String id){
+    public String deletedOrder(@PathVariable String id){
 
         String EXCHANGE_URL = "https://exchange.matraining.com";
 
