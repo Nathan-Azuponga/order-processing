@@ -2,8 +2,6 @@ package com.orderprocessing.order_processing.controllers;
 
 import com.orderprocessing.order_processing.Services.IOrderService;
 import com.orderprocessing.order_processing.dto.OrderDto;
-import com.orderprocessing.order_processing.entities.ExchangeOrder;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -19,14 +17,14 @@ import java.util.Optional;
 @RequestMapping("/order")
 public class OrderController {
 
-    @Autowired
-    private IOrderService orderService;
+    private final IOrderService orderService;
 
-    @Autowired
-    private RestTemplate restTemplate;
+    private final RestTemplate restTemplate;
 
-    private final String EXCHANGE_URL = "https://exchange.matraining.com";
-    private final String API_KEY = "a7849689-214b-4ec6-860d-b32603e76859";
+    public OrderController(IOrderService orderService, RestTemplate restTemplate) {
+        this.orderService = orderService;
+        this.restTemplate = restTemplate;
+    }
 
     @GetMapping("/orders")
     @ResponseStatus(code = HttpStatus.OK)
@@ -34,7 +32,7 @@ public class OrderController {
         return orderService.getOrders();
     }
 
-    @PostMapping( "/create2")
+    @PostMapping( "/create")
     public ResponseEntity<OrderDto> createOrder(@RequestBody OrderRequest orderRequest) {
         HttpEntity<OrderRequest> request = new HttpEntity<>(orderRequest);
 
@@ -72,21 +70,23 @@ public class OrderController {
 
     @DeleteMapping("/cancel/{id}")
     public String deletedOrder(@PathVariable("id") String id){
+
+        String EXCHANGE_URL = "https://exchange.matraining.com";
+
+        String API_KEY = "a7849689-214b-4ec6-860d-b32603e76859";
         ResponseEntity<Boolean> isCancelled = restTemplate.execute(
                 EXCHANGE_URL + "/" + API_KEY +"/order/" + id,
                 HttpMethod.DELETE,
               null,
                 restTemplate.responseEntityExtractor(Boolean.class)
         );
+        assert isCancelled != null;
         Boolean statusCancel = Optional.ofNullable(isCancelled.getBody()).orElse(false);
         if(statusCancel){
             restTemplate.postForEntity("https://smartstakereportingservice.herokuapp.com/order/delete/{id}",
                     id,
                     String.class);
         }
-//        System.out.println("respose: " + isCancelled.getBody());
-
-//        orderService.deleteOrder(id);
         return "Successfully deleted";
     }
 }

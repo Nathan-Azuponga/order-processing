@@ -1,6 +1,5 @@
 package com.orderprocessing.order_processing.entities;
 
-import com.orderprocessing.order_processing.dto.OrderDto;
 import com.orderprocessing.order_processing.enums.Side;
 import com.orderprocessing.order_processing.enums.Status;
 
@@ -21,9 +20,6 @@ public class Order {
 
     @Enumerated(EnumType.STRING)
     private Status status;
-
-//    @ManyToOne
-//    private Portfolio portfolio;
 
     public String getId() {
         return id;
@@ -73,20 +69,4 @@ public class Order {
         this.status = status;
     }
 
-//    public Portfolio getPortfolio() {
-//        return portfolio;
-//    }
-//
-//    public void setPortfolio(Portfolio portfolio) {
-//        this.portfolio = portfolio;
-//    }
-
-    public static Order fromDto(OrderDto orderDto) {
-        Order order = new Order();
-        order.setProduct(orderDto.getProduct());
-//        order.setPortfolio(orderDto.getPortfolio());
-        order.setPrice(orderDto.getPrice());
-
-        return order;
-    }
 }
