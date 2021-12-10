@@ -4,8 +4,6 @@ package com.orderprocessing.order_processing.Services.impl;
 import com.orderprocessing.order_processing.Services.IOrderService;
 import com.orderprocessing.order_processing.dto.OrderDto;
 import com.orderprocessing.order_processing.entities.Order;
-import com.orderprocessing.order_processing.enums.Side;
-import com.orderprocessing.order_processing.enums.Status;
 import com.orderprocessing.order_processing.exceptions.OrderNotFoundException;
 import com.orderprocessing.order_processing.repositories.OrderRepository;
 import com.orderprocessing.order_processing.requests.OrderRequest;

@@ -69,24 +69,24 @@ public class OrderController {
     }
 
     @PutMapping("/cancel/{id}")
-    public String deletedOrder(@PathVariable String id){
+    public void deletedOrder(@PathVariable String id){
 
         String EXCHANGE_URL = "https://exchange.matraining.com";
-
         String API_KEY = "a7849689-214b-4ec6-860d-b32603e76859";
+
         ResponseEntity<Boolean> isCancelled = restTemplate.execute(
                 EXCHANGE_URL + "/" + API_KEY +"/order/" + id,
                 HttpMethod.DELETE,
               null,
-                restTemplate.responseEntityExtractor(Boolean.class)
-        );
+                restTemplate.responseEntityExtractor(Boolean.class));
+
         assert isCancelled != null;
         Boolean statusCancel = Optional.ofNullable(isCancelled.getBody()).orElse(false);
+
         if(statusCancel){
-            restTemplate.postForEntity("https://smartstakereportingservice.herokuapp.com/order/delete/{id}",
+            restTemplate.put("https://smartstakereportingservice.herokuapp.com/order/delete/" + id,
                     id,
                     String.class);
         }
-        return "Successfully deleted";
     }
 }

@@ -41,10 +41,15 @@ public class OrderProcessingService {
         order.setStatus(Status.PENDING);
         order.setId(orderId);
 
-        // Sending to reporting/logging system
-        restTemplate.postForEntity("https://smartstakereportingservice.herokuapp.com/logorder",
+        // Sending to reporting/logging service
+//        restTemplate.postForEntity("https://smartstakereportingservice.herokuapp.com/logorder",
+//                order,
+//                String.class);
+
+        restTemplate.postForEntity("http://localhost:8080/publish",
                 order,
                 String.class);
+
     }
 
 
