@@ -15,9 +15,9 @@ public class MessagePublisher {
     @Autowired
     private RabbitTemplate template;
 
-    @PostMapping("/publish")
-    public String publishMessage(@RequestBody Order order){
-        template.convertAndSend(MConfig.EXCHANGE,MConfig.ROUTING_KEY, order);
+    //@PostMapping("/publish")
+    public String publishMessage(@RequestBody Order order) {
+        template.convertAndSend(MConfig.EXCHANGE, MConfig.ROUTING_KEY, order);
         return "Message Published";
     }
 }

@@ -4,31 +4,32 @@ import com.orderprocessing.order_processing.dto.OrderDto;
 import com.orderprocessing.order_processing.entities.Order;
 import com.orderprocessing.order_processing.enums.Status;
 import com.orderprocessing.order_processing.exceptions.UpdateOrderException;
+import com.orderprocessing.order_processing.queues.MessagePublisher;
 import com.orderprocessing.order_processing.requests.OrderRequest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Objects;
 
 
-@RestController
+@Service
 public class OrderProcessingService {
-    final
+
+    @Autowired
     RestTemplate restTemplate;
+
+    @Autowired
+    MessagePublisher messagePublisher;
 
     private final String EXCHANGE_URL = "https://exchange.matraining.com";
     private final String API_KEY = "a7849689-214b-4ec6-860d-b32603e76859";
 
-    public OrderProcessingService(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
-    }
+    public void create(OrderRequest orderRequest) {
 
-
-    @PostMapping("/created") //
-    public void createOrder2(@RequestBody OrderRequest orderRequest) {
         ResponseEntity<String> oid = restTemplate.postForEntity(EXCHANGE_URL + "/" + API_KEY + " /order", orderRequest, String.class);
         String orderId = Objects.requireNonNull(oid.getBody()).replaceAll("\"", "");
 
@@ -41,21 +42,11 @@ public class OrderProcessingService {
         order.setStatus(Status.PENDING);
         order.setId(orderId);
 
-        // Sending to reporting/logging service
-//        restTemplate.postForEntity("https://smartstakereportingservice.herokuapp.com/logorder",
-//                order,
-//                String.class);
-
-        restTemplate.postForEntity("http://localhost:8080/publish",
-                order,
-                String.class);
-
+        messagePublisher.publishMessage(order);
     }
 
 
-    //Work on how to get data to it
-    @PostMapping("/updated")
-    public void update(@RequestBody OrderDto dto) {
+    public OrderDto update(OrderDto dto) {
 
         OrderRequest orderRequest = new OrderRequest();
 
@@ -79,7 +70,6 @@ public class OrderProcessingService {
             //System.out.println("Send it to the logging/Reporting service");
             restTemplate.postForEntity("https://smartstakereportingservice.herokuapp.com/logorder", orderRequest, String.class);
         }
+        return dto;
     }
-
-
 }

@@ -14,8 +14,8 @@ import org.springframework.context.annotation.Configuration;
 public class MConfig {
 
     public static final String QUEUE = "order_queue";
-    public static final  String EXCHANGE = "message_exchange";
-    public static final String ROUTING_KEY="message_routingKey";
+    public static final String EXCHANGE = "message_exchange";
+    public static final String ROUTING_KEY = "message_routingKey";
 
     @Bean
     public ConnectionFactory connectionFactory() {
@@ -28,7 +28,7 @@ public class MConfig {
     }
 
     @Bean
-    public Queue queue(){
+    public Queue queue() {
         return new Queue(QUEUE);
     }
 
@@ -46,12 +46,12 @@ public class MConfig {
     }
 
     @Bean
-    public Jackson2JsonMessageConverter messageConverter(){
+    public Jackson2JsonMessageConverter messageConverter() {
         return new Jackson2JsonMessageConverter();
     }
 
     @Bean
-    public AmqpTemplate template(ConnectionFactory connectionFactory){
+    public AmqpTemplate template(ConnectionFactory connectionFactory) {
         RabbitTemplate template = new RabbitTemplate(connectionFactory);
         template.setMessageConverter(messageConverter());
         return template;

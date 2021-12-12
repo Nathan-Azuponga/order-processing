@@ -1,6 +1,7 @@
 package com.orderprocessing.order_processing.controllers;
 
 import com.orderprocessing.order_processing.Services.IOrderService;
+import com.orderprocessing.order_processing.Services.OrderProcessingService;
 import com.orderprocessing.order_processing.dto.OrderDto;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -21,72 +22,32 @@ public class OrderController {
 
     private final RestTemplate restTemplate;
 
-    public OrderController(IOrderService orderService, RestTemplate restTemplate) {
+    private final OrderProcessingService orderProcessingService;
+
+    public OrderController(IOrderService orderService, RestTemplate restTemplate, OrderProcessingService orderProcessingService) {
         this.orderService = orderService;
         this.restTemplate = restTemplate;
+        this.orderProcessingService = orderProcessingService;
     }
 
-    @GetMapping("/orders")
-    @ResponseStatus(code = HttpStatus.OK)
-    public List<OrderDto> getOrders(){
-        return orderService.getOrders();
-    }
-
-    @PostMapping( "/create")
+    @PostMapping("/create")
     public ResponseEntity<OrderDto> createOrder(@RequestBody OrderRequest orderRequest) {
-        HttpEntity<OrderRequest> request = new HttpEntity<>(orderRequest);
 
-        ResponseEntity<Boolean> isValidOrder = restTemplate.postForEntity("http://localhost:8080/order/validate/create ",
-                request,
-                Boolean.class);
-        Boolean status = Optional.ofNullable(isValidOrder.getBody()).orElse(false);
-
-        if(isValidOrder.getStatusCode()==HttpStatus.OK && status){
-            ResponseEntity<OrderDto> dto = restTemplate.postForEntity("http://localhost:8080/created",
-                    orderRequest,
-                    OrderDto.class);
-
-            OrderDto orderDto = Optional.ofNullable(dto.getBody()).orElse(null);
-            if(dto.getStatusCode()==HttpStatus.OK){
-                return new ResponseEntity<>(orderDto,HttpStatus.CREATED);
-            }
-        } return new ResponseEntity<>(null,HttpStatus.BAD_REQUEST);
+        OrderDto orderDto = orderService.create(orderRequest);
+        return new ResponseEntity<>(orderDto, orderDto == null ? HttpStatus.BAD_REQUEST : HttpStatus.OK);
     }
 
     @PostMapping(path = "/update/{id}")
-    public ResponseEntity<OrderDto> updateOrder(@PathVariable String id, @RequestBody OrderDto dto){
-        ResponseEntity<Boolean> isUpdateOrder = restTemplate.postForEntity("http://localhost:8080/validate/update",
-                dto,
-                Boolean.class);
-        if(Boolean.TRUE.equals(isUpdateOrder.getBody())){
-            dto.setId(id);
-            restTemplate.postForEntity("http://localhost:8080/updated",
-                    dto,
-                    String.class);
-        }
+    public ResponseEntity<OrderDto> updateOrder(@PathVariable String id, @RequestBody OrderDto dto) {
 
-        return new ResponseEntity<>(null,HttpStatus.BAD_REQUEST);
+        OrderDto orderDto = orderService.update(id, dto);
+        return new ResponseEntity<>(orderDto, orderDto == null ? HttpStatus.BAD_REQUEST : HttpStatus.OK);
     }
 
     @PutMapping("/cancel/{id}")
-    public void deletedOrder(@PathVariable String id){
+    public ResponseEntity<Void> deletedOrder(@PathVariable String id) {
 
-        String EXCHANGE_URL = "https://exchange.matraining.com";
-        String API_KEY = "a7849689-214b-4ec6-860d-b32603e76859";
-
-        ResponseEntity<Boolean> isCancelled = restTemplate.execute(
-                EXCHANGE_URL + "/" + API_KEY +"/order/" + id,
-                HttpMethod.DELETE,
-              null,
-                restTemplate.responseEntityExtractor(Boolean.class));
-
-        assert isCancelled != null;
-        Boolean statusCancel = Optional.ofNullable(isCancelled.getBody()).orElse(false);
-
-        if(statusCancel){
-            restTemplate.put("https://smartstakereportingservice.herokuapp.com/order/delete/" + id,
-                    id,
-                    String.class);
-        }
+        boolean cancelOrder = orderService.cancel(id);
+        return new ResponseEntity<>(null,cancelOrder?HttpStatus.NO_CONTENT:HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

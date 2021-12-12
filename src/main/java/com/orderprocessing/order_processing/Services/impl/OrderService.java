@@ -9,6 +9,10 @@ import com.orderprocessing.order_processing.repositories.OrderRepository;
 import com.orderprocessing.order_processing.requests.OrderRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
@@ -30,32 +34,25 @@ public class OrderService implements IOrderService {
 
 
     @Override
-    public OrderDto createOrder(OrderRequest orderRequest, String orderId) {
-        Order order = new Order();
-//
-//        double clientBalance = 340.50;
-//        int clientQuantity = 300;
-//        String clientProduct = "AAPL";
-//
-//        if (!(orderRequest.getSide() == Side.BUY) && ((orderRequest.getQuantity() * orderRequest.getPrice()) <= clientBalance)) {
-//            System.out.println("Invalid Buy order!!! Respond to the order");
-//
-//        } else if (!(orderRequest.getSide() == Side.SELL && (orderRequest.getQuantity() <= clientQuantity && orderRequest.getProduct() == clientProduct))) {
-//
-//            System.out.println("Invalid Sell order!!! Respond to the order");
-//
-//        }
-//
-//        order.setSide(orderRequest.getSide());
-//        order.setQuantity(orderRequest.getQuantity());
-//        order.setPrice(orderRequest.getPrice());
-//        order.setProduct(orderRequest.getProduct());
-//        order.setStatus(Status.PENDING);
-//        order.setId(orderId);
-//
-//        // Send to reporting/logging system
-        Order savedOrder = orderRepository.save(order);
-        return OrderDto.fromModel(savedOrder);
+    public OrderDto create(OrderRequest orderRequest) {
+        HttpEntity<OrderRequest> request = new HttpEntity<>(orderRequest);
+
+        ResponseEntity<Boolean> isValidOrder = restTemplate.postForEntity("http://localhost:8080/order/validate/create ",
+                request,
+                Boolean.class);
+        Boolean status = Optional.ofNullable(isValidOrder.getBody()).orElse(false);
+
+        if (isValidOrder.getStatusCode() == HttpStatus.OK && status) {
+            ResponseEntity<OrderDto> dto = restTemplate.postForEntity("http://localhost:8080/created",
+                    orderRequest,
+                    OrderDto.class);
+
+            OrderDto orderDto = Optional.ofNullable(dto.getBody()).orElse(null);
+            if (dto.getStatusCode() == HttpStatus.OK) {
+                return orderDto;
+            }
+        }
+        return null;
     }
 
     @Override
@@ -64,51 +61,46 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public OrderDto updateOrder(OrderDto dto) {
+    public OrderDto update(String id, OrderDto dto) {
 
-        // Receive from Update Instructions and pass it on to OrderValidationService
-        String id = "";
+        ResponseEntity<Boolean> isUpdateOrder = restTemplate.postForEntity("http://localhost:8080/validate/update",
+                dto,
+                Boolean.class);
+        if (Boolean.TRUE.equals(isUpdateOrder.getBody())) {
+            dto.setId(id);
 
-        Order order = orderRepository.findById(id).orElseThrow(() -> new OrderNotFoundException("The order with " + id + " is not found"));
-
-//        order.setQuantity(dto.getQuantity());
-//        order.setPrice(dto.getPrice());
-//
-//        OrderRequest orderRequest = new OrderRequest();
-//
-//        orderRequest.setSide(order.getSide());
-//        orderRequest.setPrice(order.getPrice());
-//        orderRequest.setProduct(order.getProduct());
-//        orderRequest.setQuantity(order.getQuantity());
-//
-//        HttpEntity<OrderRequest> request = new HttpEntity<>(orderRequest); //wrapping our body into HttpEntity
-//
-//        String EXCHANGE_URL = "https://exchange.matraining.com";
-//        String API_KEY = "a7849689-214b-4ec6-860d-b32603e76859";
-//        Boolean oid = Optional.ofNullable(restTemplate
-//                        .exchange(EXCHANGE_URL + "/" + API_KEY + " /order/" + order
-//                                .getId(), HttpMethod.PUT, request, Boolean.class)
-//                        .getBody())
-//                .orElse(false);
-//
-//        if (oid) {
-//            order = orderRepository.save(order);
-//        }
-        return OrderDto.fromModel(order);
+            //orderProcessingService.update(dto);
+            ResponseEntity<OrderDto> orderdto = restTemplate.postForEntity("http://localhost:8080/updated",
+                    dto,
+                    OrderDto.class);
+            return orderdto.getBody();
+        }
+        return null;
     }
 
 
     @Override
-    public boolean deleteOrder(String id) {
+    public boolean cancel(String id) {
 
-        // Receive ID from UI to be deleted
+        String EXCHANGE_URL = "https://exchange.matraining.com";
+        String API_KEY = "a7849689-214b-4ec6-860d-b32603e76859";
 
-        Optional<Order> order = orderRepository.findById(id);
-        if (order.isEmpty()) {
-            return false;
+        ResponseEntity<Boolean> isCancelled = restTemplate.execute(
+                EXCHANGE_URL + "/" + API_KEY + "/order/" + id,
+                HttpMethod.DELETE,
+                null,
+                restTemplate.responseEntityExtractor(Boolean.class));
+
+        assert isCancelled != null;
+        Boolean statusCancel = Optional.ofNullable(isCancelled.getBody()).orElse(false);
+
+        if (statusCancel) {
+            restTemplate.put("https://smartstakereportingservice.herokuapp.com/order/delete/" + id,
+                    id,
+                    String.class);
+            return true;
         }
-        orderRepository.deleteById(id);
-        return true;
+        return false;
     }
 
     @Override

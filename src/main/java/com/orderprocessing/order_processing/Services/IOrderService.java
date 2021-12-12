@@ -10,13 +10,13 @@ import java.util.List;
 @Component
 public interface IOrderService {
 
-    OrderDto createOrder(OrderRequest orderRequest, String orderId);
+    OrderDto create(OrderRequest orderRequest);
 
-    OrderDto updateOrder(OrderDto dto);
+    OrderDto update(String id, OrderDto dto);
 
     OrderDto getOrder(String id);
 
-    boolean deleteOrder(String id);
+    boolean cancel(String id);
 
     List<OrderDto> getOrders();
 
