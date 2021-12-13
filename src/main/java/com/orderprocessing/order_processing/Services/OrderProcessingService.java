@@ -26,11 +26,12 @@ public class OrderProcessingService {
     MessagePublisher messagePublisher;
 
     private final String EXCHANGE_URL = "https://exchange.matraining.com";
+    private final String EXCHANGE_URL2 = "https://exchange2.matraining.com";
     private final String API_KEY = "a7849689-214b-4ec6-860d-b32603e76859";
 
     public void create(OrderRequest orderRequest) {
 
-        ResponseEntity<String> oid = restTemplate.postForEntity(EXCHANGE_URL + "/" + API_KEY + " /order", orderRequest, String.class);
+        ResponseEntity<String> oid = restTemplate.postForEntity(EXCHANGE_URL2 + "/" + API_KEY + " /order", orderRequest, String.class);
         String orderId = Objects.requireNonNull(oid.getBody()).replaceAll("\"", "");
 
         Order order = new Order();
@@ -41,6 +42,8 @@ public class OrderProcessingService {
         order.setProduct(orderRequest.getProduct());
         order.setStatus(Status.PENDING);
         order.setId(orderId);
+
+        System.out.println(orderId);
 
         messagePublisher.publishMessage(order);
     }
@@ -55,8 +58,6 @@ public class OrderProcessingService {
         orderRequest.setProduct(dto.getProduct());
         orderRequest.setQuantity(dto.getQuantity());
 
-        System.out.println(orderRequest.getPrice());
-
         HttpEntity<OrderRequest> request = new HttpEntity<>(orderRequest); //wrapping our body into HttpEntity
 
         ResponseEntity<Boolean> oid = restTemplate
@@ -67,6 +68,7 @@ public class OrderProcessingService {
         }
 
         if (Boolean.TRUE.equals(oid.getBody())) {
+
             //System.out.println("Send it to the logging/Reporting service");
             restTemplate.postForEntity("https://smartstakereportingservice.herokuapp.com/logorder", orderRequest, String.class);
         }

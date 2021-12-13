@@ -34,7 +34,7 @@ public class OrderController {
     public ResponseEntity<OrderDto> createOrder(@RequestBody OrderRequest orderRequest) {
 
         OrderDto orderDto = orderService.create(orderRequest);
-        return new ResponseEntity<>(orderDto, orderDto == null ? HttpStatus.BAD_REQUEST : HttpStatus.OK);
+        return new ResponseEntity<>(orderDto, orderDto == null ? HttpStatus.OK : HttpStatus.BAD_REQUEST);
     }
 
     @PostMapping(path = "/update/{id}")
@@ -48,6 +48,6 @@ public class OrderController {
     public ResponseEntity<Void> deletedOrder(@PathVariable String id) {
 
         boolean cancelOrder = orderService.cancel(id);
-        return new ResponseEntity<>(null,cancelOrder?HttpStatus.NO_CONTENT:HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(null, cancelOrder ? HttpStatus.NO_CONTENT : HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

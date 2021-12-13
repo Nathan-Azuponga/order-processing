@@ -10,7 +10,7 @@ public class OrderValidationService {
 
         double clientBalance = 340.50;
         int clientQuantity = 300;
-        String clientProduct = "AAPL";
+        String clientProduct = "GOOGL";
 
         if ((orderRequest.getSide() == Side.BUY) && ((orderRequest.getQuantity() * orderRequest.getPrice()) > clientBalance)) {
             System.out.println("Invalid Buy order!!! Respond to the order");

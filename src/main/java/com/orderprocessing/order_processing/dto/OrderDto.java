@@ -9,6 +9,7 @@ import lombok.*;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class OrderDto {
@@ -25,52 +26,6 @@ public class OrderDto {
 
     @Enumerated(EnumType.STRING)
     private Status status;
-
-    public Status getStatus() {
-        return status;
-    }
-
-    private Portfolio portfolio;
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getProduct() {
-        return product;
-    }
-
-    public void setProduct(String product) {
-        this.product = product;
-    }
-
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
-    }
-
-    public double getPrice() {
-        return price;
-    }
-
-    public void setPrice(double price) {
-        this.price = price;
-    }
-
-    public Side getSide() {
-        return side;
-    }
-
-    public void setSide(Side side) {
-        this.side = side;
-    }
 
     public static OrderDto fromModel(Order order) {
         OrderDto orderDto = new OrderDto();

@@ -19,11 +19,14 @@ public class MConfig {
 
     @Bean
     public ConnectionFactory connectionFactory() {
+
         CachingConnectionFactory connectionFactory = new CachingConnectionFactory();
+
         connectionFactory.setHost("jackal.rmq.cloudamqp.com");
         connectionFactory.setUsername("oarfuqop");
         connectionFactory.setPassword("77qMX30NmUBKdx1INRM6SOo1ste0Q6Xz");
         connectionFactory.setVirtualHost("oarfuqop");
+
         return connectionFactory;
     }
 
