@@ -1,30 +1,23 @@
-package com.orderprocessing.order_processing.requests;
-
+package com.orderprocessing.order_processing.dto;
 
 import com.orderprocessing.order_processing.enums.Side;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
+public class OrderRequestDTO {
 
-@AllArgsConstructor
-@NoArgsConstructor
-public class OrderRequest {
-
-
+    private String id;
     private String product;
-
-
     private int quantity;
-
-
     private double price;
-
-
-    @Enumerated(EnumType.STRING)
     private Side side;
+    private Long portfolioId;
 
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getProduct() {
         return product;
@@ -56,6 +49,14 @@ public class OrderRequest {
 
     public void setSide(Side side) {
         this.side = side;
+    }
+
+    public Long getPortfolioId() {
+        return portfolioId;
+    }
+
+    public void setPortfolioId(Long portfolioId) {
+        this.portfolioId = portfolioId;
     }
 
     @Override

@@ -1,6 +1,5 @@
 package com.orderprocessing.order_processing;
 
-import com.orderprocessing.order_processing.Services.impl.OrderService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.client.RestTemplateBuilder;
