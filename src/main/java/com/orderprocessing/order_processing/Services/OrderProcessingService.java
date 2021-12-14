@@ -4,6 +4,7 @@ import com.orderprocessing.order_processing.dto.OrderEntityDTO;
 import com.orderprocessing.order_processing.dto.OrderRequestDTO;
 import com.orderprocessing.order_processing.enums.Status;
 import com.orderprocessing.order_processing.exceptions.UpdateOrderException;
+import com.orderprocessing.order_processing.queues.MConfig;
 import com.orderprocessing.order_processing.queues.MessagePublisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -40,6 +41,7 @@ public class OrderProcessingService {
                 orderRequest.getPortfolioId()
         );
         messagePublisher.publishMessage(order);
+//        template.convertAndSend(MConfig.EXCHANGE, MConfig.ROUTING_KEY, order);
     }
 
 
