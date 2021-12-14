@@ -4,6 +4,7 @@ import com.orderprocessing.order_processing.Services.OrderProcessingService;
 import com.orderprocessing.order_processing.dto.OrderRequestDTO;
 import com.orderprocessing.order_processing.queues.MessagePublisher;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
@@ -24,8 +25,8 @@ public class OrderProcessingController{
     }
 
     @PostMapping("/update")
-    public void update(@RequestBody OrderRequestDTO dto) {
-       orderProcessingService.update(dto);
+    public ResponseEntity<Boolean> update(@RequestBody OrderRequestDTO dto) {
+       return orderProcessingService.update(dto);
     }
 
 
